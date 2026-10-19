@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Sistema de Registro y Apoyo Pedagógico</title>
+    <style>
+        :root {
+            --bg-body: #f4f7fb;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --header-bg: #115379;
+            --header-text: #ffffff;
+            --border-color: #cbd5e1;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 12px 24px -4px rgba(29, 78, 216, 0.15);
+            --base-font-size: 16px;
+        }
+
+        /* Tamaños de letra dinámicos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Dinámico */
+        html[data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --header-bg: #090d16;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Barra Superior */
+        header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            background: #ef4444;
+            color: white;
+            width: 46px;
+            height: 46px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+            transform: rotate(-45deg);
+            transition: transform 0.2s ease;
+        }
+
+        .brand-logo span {
+            transform: rotate(45deg);
+        }
+
+        .brand-logo:hover {
+            transform: rotate(-45deg) scale(1.08);
+        }
+
+        .brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .brand-text p {
+            font-size: 0.8rem;
+            color: #93c5fd;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .btn-settings {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-settings:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Perfil de Usuario interactivo */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .user-info-display {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #f8f8f8;
+        }
+
+        .user-specialty-tag {
+            font-size: 0.65rem;
+            color: #bfdbfe;
+        }
+
+        /* Tarjeta flotante del perfil de usuario */
+        .user-dropdown-card {
+            position: absolute;
+            top: 65px;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1100;
+        }
+
+        .user-dropdown-card.active {
+            display: block;
+        }
+
+        .user-dropdown-card h4 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .user-field-group {
+            margin-bottom: 12px;
+        }
+
+        .user-field-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .user-field-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.8rem;
+        }
+
+        /* Contenedor Principal */
+        .main-container {
+            width: 100%;
+            padding: 36px 48px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Banner de Bienvenida Animado */
+        .welcome-banner {
+            background: linear-gradient(135deg, #50d9eb 0%, #022db9 100%);
+            color: white;
+            padding: 36px 48px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0, 233, 250, 0.514);
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+        }
+
+        .welcome-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px -5px rgba(0, 233, 250, 0.7);
+        }
+
+        .welcome-banner:active {
+            transform: scale(0.99);
+        }
+
+        /* Animación de Arcoíris para el Banner */
+        @keyframes rainbowGlow {
+            0% { background: linear-gradient(135deg, #ff3366, #ff9933); }
+            20% { background: linear-gradient(135deg, #ff9933, #ffcc00); }
+            40% { background: linear-gradient(135deg, #33cc66, #0099ff); }
+            60% { background: linear-gradient(135deg, #0099ff, #6633cc); }
+            80% { background: linear-gradient(135deg, #cc33cc, #ff3399); }
+            100% { background: linear-gradient(135deg, #50d9eb, #022db9); }
+        }
+
+        .welcome-banner.rainbow-effect {
+            animation: rainbowGlow 3s ease infinite;
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .welcome-banner p {
+            font-size: 0.95rem;
+            color: #bfdbfe;
+            font-weight: 500;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        /* Efecto de Partículas Flotantes (Confeti y Corazones) */
+        .particle {
+            position: fixed;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.5) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) translateX(var(--random-x)) scale(1.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        /* Barra Horizontal de Guías */
+        .guides-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .guide-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        .guide-btn:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .guide-icon {
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .guide-text h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .guide-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Cuadros de Sección */
+        .operational-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .card-module {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 28px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-module:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .icon-orange { background: #fff7ed; color: #ea580c; }
+        .icon-teal { background: #f0fdfa; color: #0d9488; }
+        .icon-blue { background: #eff6ff; color: #2563eb; }
+        .icon-purple { background: #f5f3ff; color: #7c3aed; }
+
+        .card-arrow {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .card-module:hover .card-arrow {
+            transform: translateX(6px);
+            color: #2563eb;
+        }
+
+        .card-content h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .card-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Modal de Ajustes y Alertas personalizadas */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: 16px;
+            width: 420px;
+            max-width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .setting-input, .setting-select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .setting-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .font-btn {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .font-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .btn-action:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            margin-top: 8px;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Modal personalizado de mensajes del sistema */
+        .custom-alert-box {
+            text-align: center;
+        }
+
+        .custom-alert-box p {
+            margin: 16px 0 24px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-card);
+            margin-top: auto;
+            font-weight: 500;
+        }
+
+        @media (max-width: 900px) {
+            .guides-bar, .operational-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra Superior -->
+    <header>
+        <div class="header-brand">
+            <div class="brand-logo" onclick="showHeartMessage()" title="¡Haz clic para un mensaje especial!">
+                <span>❤️</span>
+            </div>
+            <div class="brand-text">
+                <h1>Sistema de Apoyo Conductual</h1>
+                <p>Módulo de Gestión Educativa</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Botón de Ajustes -->
+            <button class="btn-settings" onclick="openSettings()">⚙️ Ajustes</button>
+
+            <!-- Perfil de Usuario interactivo -->
+            <div class="user-profile" onclick="toggleUserCard(event)">
+                <div class="user-avatar">👨‍🏫</div>
+                <div class="user-info-display">
+                    <span class="user-name" id="current-user-display">Docente</span>
+                    <span class="user-specialty-tag" id="current-specialty-display">Especialista ABA</span>
+                </div>
+            </div>
+
+            <!-- Tarjeta Flotante del Usuario -->
+            <div class="user-dropdown-card" id="userDropdownCard" onclick="event.stopPropagation()">
+                <h4>👤 Perfil del Docente</h4>
+                <div class="user-field-group">
+                    <label>Nombre completo</label>
+                    <input type="text" class="user-field-input" id="inputUserName" placeholder="Ej. Prof. Carlos Pérez">
+                </div>
+                <div class="user-field-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" class="user-field-input" id="inputUserEmail" placeholder="correo@institucion.edu">
+                </div>
+                <div class="user-field-group">
+                    <label>Especialidad</label>
+                    <input type="text" class="user-field-input" id="inputUserSpecialty" placeholder="Ej. Psicopedagogía / ABA">
+                </div>
+                <button class="btn-action" onclick="saveUserData()">💾 Guardar Cambios</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <div class="main-container">
+        
+        <!-- Banner de Bienvenida con Animación Interactiva de Arcoíris y Confeti/Corazones -->
+        <div class="welcome-banner" id="welcomeBanner" onclick="triggerWelcomeParty(event)">
+            <h2>¡Bienvenido al Sistema! 👋</h2>
+            <p>Plataforma profesional de apoyo conductual y pedagógico adaptada para la inclusión educativa y el análisis funcional. <small style="display:block; margin-top:6px; opacity:0.8; font-size: 0.8rem;">✨ ¡Haz clic aquí para activar la fiesta de colores y corazones!</small></p>
+        </div>
+
+        <!-- Orientación y Recursos (Barra Superior) -->
+        <div>
+            <div class="section-title">📖 Orientación y Recursos</div>
+            <div class="guides-bar">
+                <a href="guia-docentes.html" class="guide-btn">
+                    <div class="guide-icon">📖</div>
+                    <div class="guide-text">
+                        <h4>Guía para Docentes</h4>
+                        <p>Síndrome de Down y práctica</p>
+                    </div>
+                </a>
+
+                <a href="guia-padres.html" class="guide-btn">
+                    <div class="guide-icon">👨‍👩‍👧‍👦</div>
+                    <div class="guide-text">
+                        <h4>Guía para Padres</h4>
+                        <p>Orientación familiar y apoyo</p>
+                    </div>
+                </a>
+
+                <a href="dinamicas-aula.html" class="guide-btn">
+                    <div class="guide-icon">🧩</div>
+                    <div class="guide-text">
+                        <h4>Dinámicas de Aula</h4>
+                        <p>Juegos y actividades de inclusión</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Herramientas Operativas -->
+        <div>
+            <div class="section-title">⚡ Herramientas Operativas</div>
+            <div class="operational-grid">
+                
+                <a href="registro-conductas.html" class="card-module">
+                    <div>
+                        <div class="card-top">
+                            <div class="card-icon icon-orange">📝</div>
+                            <span class="card-arrow">→</span>
+                        </div>
+                        <div class="card-content">
+                            <h3>Registrar conducta</h3>
+                            <p>Nuevo registro conductual basado en Antecedente, Conducta y Consecuencia (ABA).</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="mis-estudiantes.html" class="card-module">
+                    <div>
+                        <div class="card-top">
+                            <div class="card-icon icon-teal">👩‍🎓 </div>
+                            <span class="card-arrow">→</span>
+                        </div>
+                        <div class="card-content">
+                            <h3>Mis estudiantes</h3>
+                            <p>Consulta perfiles detallados, adaptaciones curriculares y historial individual.</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="seguimiento.html" class="card-module">
+                    <div>
+                        <div class="card-top">
+                            <div class="card-icon icon-blue">📊</div>
+                            <span class="card-arrow">→</span>
+                        </div>
+                        <div class="card-content">
+                            <h3>Seguimiento</h3>
+                            <p>Evalúa el progreso diario, metas alcanzadas y evolución de los registros guardados.</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="reportes.html" class="card-module">
+                    <div>
+                        <div class="card-top">
+                            <div class="card-icon icon-purple">🖨️</div>
+                            <span class="card-arrow">→</span>
+                        </div>
+                        <div class="card-content">
+                            <h3>Reportes</h3>
+                            <p>Genera informes claros, formales y listos para imprimir o entregar a la institución.</p>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Ventana Modal de Ajustes -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configuración y Preferencias</h3>
+                <button class="close-modal" onclick="closeSettings()">✕</button>
+            </div>
+
+            <!-- Tamaño de Letra -->
+            <div class="setting-group">
+                <label>📏 Tamaño de Letra</label>
+                <div class="setting-options">
+                    <button class="font-btn" id="btn-n1" onclick="setFontSize('nivel-1')">Nivel 1</button>
+                    <button class="font-btn active" id="btn-n2" onclick="setFontSize('nivel-2')">Nivel 2</button>
+                    <button class="font-btn" id="btn-n3" onclick="setFontSize('nivel-3')">Nivel 3</button>
+                </div>
+            </div>
+
+            <!-- Modo Claro / Oscuro -->
+            <div class="setting-group">
+                <label>🌓 Apariencia Visual</label>
+                <select class="setting-select" id="themeSelect" onchange="setTheme(this.value)">
+                    <option value="light">Modo Claro</option>
+                    <option value="dark">Modo Oscuro</option>
+                </select>
+            </div>
+
+            <!-- Meta Diaria de Registros -->
+            <div class="setting-group">
+                <label>🎯 Meta Diaria de Registros ABA</label>
+                <input type="number" class="setting-input" id="dailyGoalInput" placeholder="Ej. 5 registros diarios" min="1" max="50">
+                <button class="btn-action" onclick="saveDailyGoal()">💾 Guardar Meta</button>
+            </div>
+
+            <!-- Botón de Restaurar Valores -->
+            <div class="setting-group">
+                <label>🗑️ Restablecer Sistema</label>
+                <button class="btn-action btn-danger" onclick="resetSystemData()">Restablecer Valores por Defecto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Personalizado para Mensajes del Sistema -->
+    <div class="modal-overlay" id="systemMessageModal">
+        <div class="modal-content custom-alert-box">
+            <div class="modal-header">
+                <h3 id="sysModalTitle">Mensaje del Sistema ABA</h3>
+                <button class="close-modal" onclick="closeSystemMessage()">✕</button>
+            </div>
+            <p id="sysModalText">Texto descriptivo del mensaje.</p>
+            <button class="btn-action" onclick="closeSystemMessage()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer>
+        ABA — Sistema de Registro y Apoyo Pedagógico Inclusivo &copy; 2026
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function toggleUserCard(event) {
+            event.stopPropagation();
+            const card = document.getElementById('userDropdownCard');
+            card.classList.toggle('active');
+        }
+
+        window.addEventListener('click', function() {
+            const card = document.getElementById('userDropdownCard');
+            if(card) card.classList.remove('active');
+        });
+
+        function showHeartMessage() {
+            showSystemMessage(
+                "❤️ Mensaje de Apoyo Pedagógico", 
+                "¡Gracias por tu gran labor docente! Cada registro y cada muestra de empatía transforma vidas y construye un entorno inclusivo lleno de oportunidades. ¡Sigue adelante con esa vocación maravillosa!"
+            );
+        }
+
+        /* Efecto de Arcoíris y Confeti / Corazones al presionar el Banner de Bienvenida */
+        function triggerWelcomeParty(event) {
+            const banner = document.getElementById('welcomeBanner');
+            
+            // Activar efecto de colores arcoíris en el banner
+            banner.classList.add('rainbow-effect');
+            setTimeout(() => {
+                banner.classList.remove('rainbow-effect');
+            }, 3500); // Dura 3.5 segundos brillando
+
+            // Generar lluvia de corazones y confeti desde donde hizo clic
+            const symbols = ['❤️', '💖', '✨', '🎉', '🌟', '💙', '💜', '🎈'];
+            const rect = banner.getBoundingClientRect();
+            
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Posición inicial aleatoria dentro del ancho del banner
+                const randomXCoord = event.clientX + (Math.random() * 200 - 100);
+                particle.style.left = randomXCoord + 'px';
+                particle.style.top = (rect.top + 30) + 'px';
+                
+                // Desplazamiento horizontal aleatorio para el vuelo
+                const randomMoveX = (Math.random() * 250 - 125) + 'px';
+                particle.style.setProperty('--random-x', randomMoveX);
+                
+                document.body.appendChild(particle);
+
+                // Eliminar la partícula al terminar la animación
+                setTimeout(() => {
+                    particle.remove();
+                }, 1500);
+            }
+        }
+
+        function showSystemMessage(title, text) {
+            document.getElementById('sysModalTitle').textContent = title;
+            document.getElementById('sysModalText').textContent = text;
+            document.getElementById('systemMessageModal').style.display = 'flex';
+        }
+
+        function closeSystemMessage() {
+            document.getElementById('systemMessageModal').style.display = 'none';
+        }
+
+        function setFontSize(level) {
+            document.documentElement.setAttribute('data-font-size', level);
+            document.querySelectorAll('.font-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + level.replace('nivel-', 'n')).classList.add('active');
+            localStorage.setItem('aba_font_size', level);
+        }
+
+        function setTheme(theme) {
+            if(theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+            localStorage.setItem('aba_theme', theme);
+        }
+
+        function saveUserData() {
+            const name = document.getElementById('inputUserName').value.trim();
+            const email = document.getElementById('inputUserEmail').value.trim();
+            const specialty = document.getElementById('inputUserSpecialty').value.trim();
+
+            if(name) {
+                document.getElementById('current-user-display').textContent = name;
+                localStorage.setItem('aba_username', name);
+            }
+            if(email) {
+                localStorage.setItem('aba_useremail', email);
+            }
+            if(specialty) {
+                document.getElementById('current-specialty-display').textContent = specialty;
+                localStorage.setItem('aba_userspecialty', specialty);
+            }
+
+            document.getElementById('userDropdownCard').classList.remove('active');
+            showSystemMessage("✅ Actualización Exitosa", "Los datos del perfil se han guardado correctamente.");
+        }
+
+        function saveDailyGoal() {
+            const goal = document.getElementById('dailyGoalInput').value.trim();
+            if(goal && goal > 0) {
+                localStorage.setItem('aba_daily_goal', goal);
+                showSystemMessage("🎯 Meta Establecida", `Tu meta diaria se configuró correctamente a ${goal} registros.`);
+                closeSettings();
+            } else {
+                showSystemMessage("⚠️ Valor Inválido", "Por favor ingresa un número válido para la meta diaria.");
+            }
+        }
+
+        function resetSystemData() {
+            localStorage.removeItem('aba_username');
+            localStorage.removeItem('aba_useremail');
+            localStorage.removeItem('aba_userspecialty');
+            localStorage.removeItem('aba_daily_goal');
+            
+            document.getElementById('current-user-display').textContent = 'Docente';
+            document.getElementById('current-specialty-display').textContent = 'Especialista ABA';
+            document.getElementById('inputUserName').value = '';
+            document.getElementById('inputUserEmail').value = '';
+            document.getElementById('inputUserSpecialty').value = '';
+            document.getElementById('dailyGoalInput').value = '';
+
+            closeSettings();
+            showSystemMessage("🔄 Sistema Restaurado", "Se han restablecido los valores por defecto del perfil.");
+        }
+
+        window.onload = function() {
+            const savedFont = localStorage.getItem('aba_font_size');
+            if(savedFont) setFontSize(savedFont);
+
+            const savedTheme = localStorage.getItem('aba_theme');
+            if(savedTheme) {
+                document.getElementById('themeSelect').value = savedTheme;
+                setTheme(savedTheme);
+            }
+
+            const savedName = localStorage.getItem('aba_username');
+            if(savedName) {
+                document.getElementById('current-user-display').textContent = savedName;
+                document.getElementById('inputUserName').value = savedName;
+            }
+
+            const savedEmail = localStorage.getItem('aba_useremail');
+            if(savedEmail) {
+                document.getElementById('inputUserEmail').value = savedEmail;
+            }
+
+            const savedSpecialty = localStorage.getItem('aba_userspecialty');
+            if(savedSpecialty) {
+                document.getElementById('current-specialty-display').textContent = savedSpecialty;
+                document.getElementById('inputUserSpecialty').value = savedSpecialty;
+            }
+
+            const savedGoal = localStorage.getItem('aba_daily_goal');
+            if(savedGoal) {
+                document.getElementById('dailyGoalInput').value = savedGoal;
+            }
+        };
+    </script>
+
+</body>
+</html>

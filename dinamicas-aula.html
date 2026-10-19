@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Dinámicas y Estrategias para el Aula</title>
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --border-color: #cbd5e1;   
+            --base-font-size: 16px;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Tamaños de letra dinámicos compartidos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Global Sincronizado */
+        html[data-theme="dark"] {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        html[data-theme="dark"] .back-btn {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .content-body {
+            padding: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .page-header h2 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dynamic-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            border-left: 6px solid var(--accent-blue);
+        }
+
+        .dynamic-card h3 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dynamic-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-blue);
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+
+        .dynamic-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .game-example-box {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .game-example-box strong {
+            color: var(--accent-blue);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .content-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <main>
+        <header>
+            <div class="header-left">
+                <a href="index.html" class="back-btn" title="Volver al Inicio">←</a>
+                <span class="header-title">Guía de Dinámicas para el Docente</span>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h2>🏫 Banco de Dinámicas y Estrategias Inclusivas</h2>
+                <p>Estrategias prácticas basadas en Análisis Aplicado de la Conducta (ABA) diseñadas para apoyar al docente en la gestión de aula, la atención y la inclusión.</p>
+            </div>
+
+            <!-- Dinámica 1 -->
+            <div class="dynamic-card">
+                <h3>🚦 1. El Semáforo de la Autorregulación Emocional</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Ayuda a los estudiantes a reconocer sus estados de activación emocional (frustración o calma) mediante apoyos visuales claros, previniendo conductas desafiantes antes de que escalen.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Coloca un cartel de semáforo visible en la pizarra. Al iniciar la clase o notar cambios en el ambiente, pidiéndole al grupo que identifique en qué color se encuentran. 
+                    <br><br>• <strong>Rojo:</strong> Pausa activa, respiración profunda o descanso breve.
+                    <br><span style="display:inline-block; margin-top: 4px;">• <strong>Amarillo:</strong> Alerta o ansiedad leve; se simplifican las instrucciones.</span>
+                    <span style="display:inline-block; margin-top: 4px;">• <strong>Verde:</strong> Zona de calma y aprendizaje óptimo para actividades grupales.</span>
+                </div>
+            </div>
+
+            <!-- Dinámica 2 -->
+            <div class="dynamic-card">
+                <h3>👣 2. La Ruta de los Pasos y Mandatos</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Diseñada para trabajar la comprensión de instrucciones secuenciadas de 2 o 3 pasos, combinando la agilidad motora con el refuerzo social de los compañeros de clase.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Se trazan huellas de colores en el suelo del aula. Se le entrega al alumno una tarjeta con una misión visual clara (ej. <em>"Da dos pasos hacia la alfombra azul, toca la mesa verde y aplaude"</em>). Un compañero actúa como guía de apoyo (fomentando la tutoría entre pares) y al finalizar, todo el salón celebra el logro.
+                </div>
+            </div>
+
+            <!-- Dinámica 3 -->
+            <div class="dynamic-card">
+                <h3>📦 3. El Buzón de los Tesoros y Refuerzos Positivos</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Fomenta la autoestima, la empatía y la cohesión grupal utilizando el principio del refuerzo social constante para destacar logros diarios del estudiante.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Se decora una caja pequeña llamada "El Buzón Amigo". Durante la semana, tanto el profesor como los alumnos depositan notas cortas con dibujos o palabras de apoyo cuando alguien comparte o se esfuerza. El viernes se abre en círculo para reforzar la conducta adaptativa mediante atención grupal positiva.
+                </div>
+            </div>
+
+            <!-- Dinámica 4 -->
+            <div class="dynamic-card">
+                <h3>🪞 4. El Espejo de las Expresiones (Imitación Social)</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Estimula la atención conjunta, el contacto visual, la imitación motora y el reconocimiento de gestos emocionales, habilidades clave para la socialización.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Los estudiantes se sientan en semicírculo frente al docente. El docente realiza un gesto exagerado representando una emoción básica (ej. cara de sorpresa o alegría) y los niños deben imitarlo idénticamente de inmediato, reforzando la sincronía y la atención visual en grupo.
+                </div>
+            </div>
+
+            <!-- Dinámica 5 -->
+            <div class="dynamic-card">
+                <h3>🖼️ 5. Las Tarjetas Mágicas de Intercambio (Sistema PECS Adaptado)</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Mejora la comunicación funcional y la petición de objetos o deseos mediante el intercambio estructurado de imágenes, reduciendo la frustración por barreras verbales.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Ten disponible en el pupitre del alumno un set de tarjetas con pictogramas sencillos (crayón, tijeras, agua, cuento). Cuando el estudiante necesite algo, en lugar de frustrarse o gritar, toma la tarjeta correspondiente y se la entrega al docente o compañero para solicitar el objeto de forma funcional.
+                </div>
+            </div>
+
+            <!-- Dinámica 6 -->
+            <div class="dynamic-card">
+                <h3>🤝 6. El Círculo de las Fortalezas (Cualidades Ocultas)</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Promueve la inclusión activa y la valoración de las capacidades individuales de cada alumno, destacando que todos aportan talentos únicos al grupo.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Se pasa una pelota suave en ronda. Al recibirla, cada niño dice una cualidad positiva o algo que le guste de su compañero de al lado. El docente guía cuidadosamente el ejercicio para asegurar que se resalte un logro específico de autonomía del estudiante integrado durante la semana.
+                </div>
+            </div>
+
+            <!-- Dinámica 7 -->
+            <div class="dynamic-card">
+                <h3>🔍 7. El Tesoro Escondido de las Texturas (Exploración Sensorial)</h3>
+                <div class="dynamic-section-title">Propósito y Fundamento ABA</div>
+                <p>Estimula el procesamiento sensorial táctil, la discriminación de objetos y la atención concentrada mediante actividades de manipulación dirigidas para calmar la ansiedad.</p>
+                
+                <div class="dynamic-section-title">Aplicación Práctica en el Aula</div>
+                <div class="game-example-box">
+                    <strong>Cómo implementarlo:</strong> Se utiliza una pequeña bolsa o caja opaca con objetos de distintas texturas (esponja suave, lija fina, tela suave, madera lisa). Con los ojos vendados o guiados por el tacto, el estudiante introduce la mano, describe lo que siente (blando, rugoso, frío) y adivina de qué objeto se trata.
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <strong>ABA – Sistema de Registro y Apoyo Pedagógico Inclusivo</strong>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // Cargar Tema y Tamaño de Fuente al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('aba_theme');
+        if(savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        const savedFont = localStorage.getItem('aba_font_size');
+        if(savedFont) {
+            document.documentElement.setAttribute('data-font-size', savedFont);
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Guía para Padres</title>
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --border-color: #cbd5e1;   
+            --base-font-size: 16px;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Tamaños de letra dinámicos compartidos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Global Sincronizado */
+        html[data-theme="dark"] {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        html[data-theme="dark"] .back-btn {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .content-body {
+            padding: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .page-header h2 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .guide-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .guide-section h3 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-section p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .info-list li {
+            background: var(--bg-deep);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 500;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* PASOS PARA APLICAR CONDUCTA */
+        .step-box-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .step-item {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 14px 18px;
+            border-radius: 12px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        html[data-theme="dark"] .step-item {
+            background: #064e3b;
+            border-color: #065f46;
+        }
+
+        .step-number {
+            background: #22c55e;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-text h4 {
+            font-size: 0.9rem;
+            color: #166534;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        html[data-theme="dark"] .step-text h4 {
+            color: #6ee7b7;
+        }
+
+        .step-text p {
+            font-size: 0.85rem;
+            color: #15803d;
+            margin: 0;
+        }
+
+        html[data-theme="dark"] .step-text p {
+            color: #a7f3d0;
+        }
+
+        /* ESTILOS PARA EL CUESTIONARIO ESCRITO */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .quiz-question {
+            background: var(--bg-deep);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .quiz-question h4 {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .quiz-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            background: var(--bg-card);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .quiz-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .quiz-input.correct {
+            border-color: #22c55e !important;
+            background: #dcfce7 !important;
+            color: #166534;
+        }
+
+        html[data-theme="dark"] .quiz-input.correct {
+            background: #064e3b !important;
+            color: #6ee7b7 !important;
+        }
+
+        .quiz-input.incorrect {
+            border-color: #ef4444 !important;
+            background: #fee2e2 !important;
+            color: #991b1b;
+        }
+
+        html[data-theme="dark"] .quiz-input.incorrect {
+            background: #7f1d1d !important;
+            color: #fca5a5 !important;
+        }
+
+        .feedback-text {
+            font-size: 0.75rem;
+            margin-top: 6px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .quiz-result-box {
+            margin-top: 15px;
+            padding: 16px;
+            background: #e0f2fe;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+            border: 1px solid #bae6fd;
+        }
+
+        html[data-theme="dark"] .quiz-result-box {
+            background: #1e3a8a;
+            color: #93c5fd;
+            border-color: #3b82f6;
+        }
+
+        .btn-check-quiz {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: background 0.2s;
+        }
+
+        .btn-check-quiz:hover {
+            background: #1d4ed8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .content-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <main>
+        <header>
+            <div class="header-left">
+                <a href="index.html" class="back-btn" title="Volver al Inicio">←</a>
+                <span class="header-title">Guía para Padres</span>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h2>👨‍👩‍👧 Guía Familiar: Comprensión Emocional y Pautas en Casa</h2>
+                <p>Orientación psicológica para padres, comprensión profunda de la condición y guía práctica de manejo conductual.</p>
+            </div>
+
+            <!-- SECCIÓN 1: COMPRENSIÓN PSICOLÓGICA Y APOYO EMOCIONAL -->
+            <div class="guide-section">
+                <h3>🧠 Comprensión Psicológica y Crianza Consciente</h3>
+                <p>El camino de criar y acompañar a un hijo con necesidades especiales o síndrome de Down conlleva retos emocionales profundos. Es completamente normal transitar por fases de negación, duelo o alta exigencia. Comprender los aspectos psicológicos ayuda a fortalecer el vínculo familiar:</p>
+                <ul class="info-list">
+                    <li><strong>Validación de emociones:</strong> Permitirse sentir frustración, cansancio o miedo no te hace menos fuerte; reconocerlo es el primer paso para buscar bienestar emocional y resiliencia.</li>
+                    <li><strong>Redes de apoyo afectivo:</strong> Evitar el aislamiento social. Compartir vivencias con otros padres que atraviesan experiencias similares reduce la carga mental y fomenta la empatía mutua.</li>
+                    <li><strong>Expectativas realistas y flexibles:</strong> Cada niño lleva su propio ritmo de desarrollo. Celebrar los micro-logros cotidianos transforma la ansiedad del futuro en gratitud por el presente.</li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 2: GUÍA PASO A PASO AL MOMENTO DE APLICAR UNA CONDUCTA -->
+            <div class="guide-section">
+                <h3>🛡️ Guía Práctica: Qué hacer al momento de abordar una conducta en casa</h3>
+                <p>Cuando se presenta una conducta desafiante o se requiere establecer una pauta de disciplina positiva en el hogar utilizando principios ABA, los padres deben seguir estos pasos clave:</p>
+                
+                <div class="step-box-grid">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            <h4>Mantener la Calma y el Tono de Voz</h4>
+                            <p>Los niños absorben la tensión del ambiente. Respirar hondo y hablar con voz calmada previene la escalada de la rabieta o ansiedad.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            <h4>Observar el Antecedente (¿Qué lo provocó?)</h4>
+                            <p>Identifica qué detonó la conducta (ruido fuerte, cansancio, cambio abrupto de rutina o frustración al comunicarse).</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">
+                            <h4>Dar Instrucciones Claras y Breves</h4>
+                            <p>Usa frases cortas acompañadas de contacto visual o apoyo visual (gestos o imágenes). Evita sermones largos.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-text">
+                            <h4>Aplicar Consecuencia Constructiva y Refuerzo Inmediato</h4>
+                            <p>Premia o refuerza verbalmente de inmediato cuando el niño logre modular su conducta o seguir la instrucción. Si hay que corregir, hazlo de forma firme pero amorosa sin gritos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: EVALUACIÓN / CUESTIONARIO ESCRITO PARA PADRES -->
+            <div class="guide-section">
+                <h3>📝 Evaluación Básica de Orientación Familiar (Escribe tus respuestas)</h3>
+                <p>Responde a las siguientes preguntas generales basadas en la guía de apoyo y pautas en el hogar:</p>
+                
+                <div class="quiz-container" id="quizFormPadres">
+                    <!-- Pregunta 1 -->
+                    <div class="quiz-question" data-keywords="calma, voz, respirar">
+                        <h4>1. ¿Cómo debe ser principalmente la actitud o el tono de voz del adulto al momento de guiar al niño?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Mantener la calma">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="quiz-question" data-keywords="antecedente, causa, detonó">
+                        <h4>2. ¿Qué nombre recibe aquello que ocurre justo antes y que pudo provocar o detonar la conducta?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. El antecedente">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="quiz-question" data-keywords="cortas, breves, sencillas">
+                        <h4>3. ¿Cómo deben ser las instrucciones o frases que se le dan al niño para que pueda comprenderlas mejor?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Instrucciones cortas">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="quiz-question" data-keywords="inmediato, rápido, momento">
+                        <h4>4. ¿Qué característica principal debe tener el refuerzo o premio al momento en que el niño logra una buena conducta?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Ser inmediato">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="quiz-question" data-keywords="ritmo, desarrollo, propio">
+                        <h4>5. ¿Qué se debe respetar en el crecimiento y aprendizaje de cada niño sin compararlo con los demás?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Su propio ritmo">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 6 -->
+                    <div class="quiz-question" data-keywords="apoyo, red, compartir">
+                        <h4>6. ¿Qué tipo de red es útil buscar con otros padres para compartir vivencias y reducir la carga emocional?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Red de apoyo">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 7 -->
+                    <div class="quiz-question" data-keywords="visual, imágenes, gestos">
+                        <h4>7. Además de las palabras, ¿qué tipo de apoyos extras ayudan mucho a que el niño entienda mejor las indicaciones?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Apoyos visuales">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 8 -->
+                    <div class="quiz-question" data-keywords="gritos, sermones, regaños">
+                        <h4>8. ¿Qué se debe evitar al momento de corregir o guiar al niño para no generar más tensión?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Evitar gritos">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 9 -->
+                    <div class="quiz-question" data-keywords="flexibles, realistas">
+                        <h4>9. ¿Cómo deben ser las metas y expectativas que los padres se ponen respecto al avance diario?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Expectativas realistas">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 10 -->
+                    <div class="quiz-question" data-keywords="pequeños, micro, logros">
+                        <h4>10. ¿Qué tipo de avances cotidianos se deben celebrar para valorar el esfuerzo diario?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Pequeños logros">
+                        <div class="feedback-text"></div>
+                    </div>
+                </div>
+
+                <button class="btn-check-quiz" onclick="verificarQuizPadres()">Verificar mis respuestas y calificación</button>
+                <div class="quiz-result-box" id="quizResultPadresText"></div>
+            </div>
+
+            <!-- SECCIÓN 4: RECURSO AUDIOVISUAL -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin: 24px 0; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: var(--shadow-sm);">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 55px; height: 55px; background: #fee2e2; color: #dc2626; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+                        ▶️
+                    </div>
+                    <div>
+                        <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">Video Explicativo de Apoyo</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Accede a la demostración práctica y visual de esta guía directamente en plataforma externa.</p>
+                    </div>
+                </div>
+                <a href="https://youtu.be/WQSlW5VIN1M" target="_blank" style="background: #dc2626; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.85rem; white-space: nowrap; transition: background 0.2s;">
+                    Ver en YouTube ↗
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <strong>ABA – Sistema de Registro y Apoyo Pedagógico Inclusivo</strong>
+        </footer>
+    </main>
+</div>
+
+<script>
+    // Cargar Tema y Tamaño de Fuente al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('aba_theme');
+        if(savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        const savedFont = localStorage.getItem('aba_font_size');
+        if(savedFont) {
+            document.documentElement.setAttribute('data-font-size', savedFont);
+        }
+    });
+
+    function verificarQuizPadres() {
+        const preguntas = document.getElementsByClassName('quiz-question');
+        let aciertos = 0;
+        let total = preguntas.length;
+
+        for (let pregunta of preguntas) {
+            const input = pregunta.querySelector('.quiz-input');
+            const feedback = pregunta.querySelector('.feedback-text');
+            const keywordsAttr = pregunta.getAttribute('data-keywords');
+            const keywords = keywordsAttr.split(',').map(k => k.trim().toLowerCase());
+            
+            const respuestaUsuario = input.value.trim().toLowerCase();
+
+            input.classList.remove('correct', 'incorrect');
+            feedback.style.display = "block";
+
+            let esCorrecta = false;
+            if (respuestaUsuario.length > 0) {
+                for (let word of keywords) {
+                    if (respuestaUsuario.includes(word)) {
+                        esCorrecta = true;
+                        break;
+                    }
+                }
+            }
+
+            if (esCorrecta) {
+                aciertos++;
+                input.classList.add('correct');
+                feedback.style.color = "#166534";
+                feedback.innerText = "¡Correcto!";
+            } else {
+                input.classList.add('incorrect');
+                feedback.style.color = "#991b1b";
+                feedback.innerText = `Incorrecto o incompleto. (Palabras clave esperadas: ${keywordsAttr})`;
+            }
+        }
+
+        let notaPuntos = (aciertos / total) * 100;
+        const resultBox = document.getElementById('quizResultPadresText');
+        resultBox.style.display = "block";
+
+        let mensajeMotivacional = "";
+        if (notaPuntos >= 90) {
+            mensajeMotivacional = "🌟 ¡Excelente dedicación! Tienes una gran comprensión del apoyo familiar y conductual.";
+        } else if (notaPuntos >= 70) {
+            mensajeMotivacional = "👍 ¡Muy bien! Entiendes perfectamente las pautas esenciales para el hogar.";
+        } else {
+            mensajeMotivacional = "💡 Puedes revisar nuevamente las pautas y consejos psicológicos superiores.";
+        }
+
+        resultBox.innerHTML = `Tu Calificación: ${aciertos} de ${total} aciertos (${notaPuntos}%).<br><span style="font-weight: 500; font-size: 0.85rem; color: #0369a1; display:inline-block; margin-top:5px;">${mensajeMotivacional}</span>`;
+    }
+</script>
+
+</body>
+</html>

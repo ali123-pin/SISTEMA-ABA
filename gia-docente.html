@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Guía para Docentes</title>
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --border-color: #cbd5e1;   
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.5px;
+        }
+
+        .content-body {
+            padding: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-header {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #0f172a;
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .guide-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        .guide-section h3 {
+            font-size: 18px;
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-section p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .info-list li {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+            font-size: 13px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* ESTILOS PARA EL CUESTIONARIO ESCRITO */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .quiz-question {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .quiz-question h4 {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .quiz-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .quiz-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .quiz-input.correct {
+            border-color: #22c55e !important;
+            background: #dcfce7 !important;
+            color: #166534;
+        }
+
+        .quiz-input.incorrect {
+            border-color: #ef4444 !important;
+            background: #fee2e2 !important;
+            color: #991b1b;
+        }
+
+        .feedback-text {
+            font-size: 11px;
+            margin-top: 6px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .quiz-result-box {
+            margin-top: 15px;
+            padding: 16px;
+            background: #e0f2fe;
+            border-radius: 10px;
+            color: #0369a1;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+            border: 1px solid #bae6fd;
+        }
+
+        .btn-check-quiz {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: background 0.2s;
+        }
+
+        .btn-check-quiz:hover {
+            background: #1d4ed8;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .content-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <main>
+        <header>
+            <div class="header-left">
+                <a href="index.html" class="back-btn" title="Volver al Inicio">←</a>
+                <span class="header-title">Guía para Docentes</span>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h2>📖 Información Integral y Evaluación Docente</h2>
+                <p>Conceptos clave, contexto histórico, estadísticas en Nicaragua y evaluación interactiva escrita.</p>
+            </div>
+
+            <!-- SECCIÓN 1: ¿PARA QUÉ SIRVE ESTA WEB? -->
+            <div class="guide-section">
+                <h3>🌐 ¿Para qué sirve esta web?</h3>
+                <p>Esta plataforma digital está diseñada como una herramienta de apoyo pedagógico e inclusivo. Su propósito principal es facilitar a docentes, especialistas y familiares el registro sistemático de conductas mediante la metodología **ABA** (Antecedente, Conducta y Consecuencia), organizar perfiles de estudiantes con necesidades educativas especiales (como el Síndrome de Down) y optimizar el seguimiento diario para mejorar la calidad educativa y la inclusión escolar.</p>
+            </div>
+
+            <!-- SECCIÓN 2: ¿QUÉ ES EL SÍNDROME DE DOWN Y SU HISTORIA? -->
+            <div class="guide-section">
+                <h3>🧬 ¿Qué es el Síndrome de Down y cuándo fue el primer caso?</h3>
+                <p>El Síndrome de Down no es una enfermedad, sino una condición genética natural causada por la presencia de una copia extra del cromosoma 21 (trisomía 21), lo que altera el desarrollo físico y cognitivo.</p>
+                <ul class="info-list">
+                    <li><strong>Primer caso documentado:</strong> Aunque existen representaciones históricas antiguas, médicamente fue descrito formalmente por primera vez en **1866** por el médico británico **John Langdon Down**. En 1959, el investigador Jérôme Lejeune descubrió que su origen era cromosómico.</li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 3: CASOS EN NICARAGUA Y APOYO -->
+            <div class="guide-section">
+                <h3>🇳🇮 Situación en Nicaragua y redes de apoyo</h3>
+                <p>En Nicaragua, diversas instituciones especializadas y asociaciones trabajan activamente en la educación inclusiva y la atención temprana.</p>
+                <ul class="info-list">
+                    <li><strong>Estimación de casos:</strong> Cientos de familias en el país conviven y reciben apoyo en centros de educación especial y programas del Ministerio de Educación.</li>
+                    <li><strong>El apoyo institucional:</strong> El enfoque actual promueve la integración escolar, terapias de lenguaje, modificación conductual (ABA) y capacitación constante a docentes para garantizar adaptaciones curriculares justas y efectivas.</li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 4: QUÉ TENER EN CUENTA EN EL AULA -->
+            <div class="guide-section">
+                <h3>💡 Orientaciones prácticas para el aula</h3>
+                <p>El trabajo pedagógico diario debe enfocarse en potenciar la autonomía del estudiante:</p>
+                <ul class="info-list">
+                    <li><strong>Apoyo visual constante:</strong> Uso de pictogramas, agendas diarias e imágenes de anticipación.</li>
+                    <li><strong>Refuerzo positivo:</strong> Celebrar cada avance refuerza la autoestima y la disposición hacia el aprendizaje.</li>
+                    <li><strong>Instrucciones claras:</strong> Fraccionar las tareas en pequeños pasos comprensibles.</li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 5: EVALUACIÓN / CUESTIONARIO ESCRITO (10 PREGUNTAS) -->
+            <div class="guide-section">
+                <h3>📝 Evaluación de Conocimientos (Escribe tus respuestas)</h3>
+                <p>Escribe la respuesta correcta o palabras clave en cada espacio y haz clic en verificar para obtener tu calificación:</p>
+                
+                <div class="quiz-container" id="quizForm">
+                    <!-- Pregunta 1 -->
+                    <div class="quiz-question" data-keywords="analisis aplicado conducta">
+                        <h4>1. ¿Qué significan las siglas ABA? (Escribe las palabras clave o concepto principal)</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Análisis aplicado...">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="quiz-question" data-keywords="21">
+                        <h4>2. ¿Qué par cromosómico presenta una trisomía en el Síndrome de Down? (Número)</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. 21">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="quiz-question" data-keywords="john langdon down, down">
+                        <h4>3. ¿Qué médico británico describió formalmente el síndrome por primera vez en 1866? (Apellido o nombre)</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. John Down">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="quiz-question" data-keywords="visual, agendas">
+                        <h4>4. ¿Qué tipo de apoyo o herramienta ayuda a estructurar rutinas en estudiantes especiales?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Apoyo visual">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="quiz-question" data-keywords="antes, previo, anterior">
+                        <h4>5. En el análisis ABA, ¿cuándo ocurre el "Antecedente" respecto a la conducta?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Antes de la conducta">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 6 -->
+                    <div class="quiz-question" data-keywords="registrar, conducta, perfiles, estudiantes">
+                        <h4>6. ¿Cuál es la función principal de esta plataforma web ABA?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Registrar conductas">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 7 -->
+                    <div class="quiz-question" data-keywords="positivo, refuerzo">
+                        <h4>7. ¿Qué tipo de refuerzo inmediato se recomienda aplicar ante conductas deseadas?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Refuerzo positivo">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 8 -->
+                    <div class="quiz-question" data-keywords="lejeune, jerome">
+                        <h4>8. ¿Cómo se apellidaba el científico que descubrió el origen cromosómico en 1959?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Lejeune">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 9 -->
+                    <div class="quiz-question" data-keywords="fraccionar, pasos, pequeños">
+                        <h4>9. ¿Por qué es útil dividir las tareas complejas en el aula?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. Fraccionar tareas">
+                        <div class="feedback-text"></div>
+                    </div>
+
+                    <!-- Pregunta 10 -->
+                    <div class="quiz-question" data-keywords="familia, padres">
+                        <h4>10. Además de la escuela, ¿quiénes son el pilar fundamental en colaboración continua con los docentes?</h4>
+                        <input type="text" class="quiz-input" placeholder="Ej. La familia">
+                        <div class="feedback-text"></div>
+                    </div>
+                </div>
+
+                <button class="btn-check-quiz" onclick="verificarQuizEscrito()">Verificar mis respuestas y calificación</button>
+                <div class="quiz-result-box" id="quizResultText"></div>
+            </div>
+
+            <!-- SECCIÓN 6: VIDEO EDUCATIVO -->
+            <div class="guide-section">
+                <h3>🎥 Recurso Audiovisual Recomendado</h3>
+                <p>Visualiza el siguiente material de apoyo sobre estrategias de enseñanza y abordaje conductual en el aula especial:</p>
+                
+                <div class="video-container">
+                    <iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" 
+                            title="Video Guía Docente" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <strong>ABA – Sistema de Registro y Apoyo Pedagógico Inclusivo</strong>
+        </footer>
+    </main>
+</div>
+
+<script>
+    function verificarQuizEscrito() {
+        const preguntas = document.getElementsByClassName('quiz-question');
+        let aciertos = 0;
+        let total = preguntas.length;
+
+        for (let pregunta of preguntas) {
+            const input = pregunta.querySelector('.quiz-input');
+            const feedback = pregunta.querySelector('.feedback-text');
+            const keywordsAttr = pregunta.getAttribute('data-keywords');
+            const keywords = keywordsAttr.split(',').map(k => k.trim().toLowerCase());
+            
+            const respuestaUsuario = input.value.trim().toLowerCase();
+
+            // Limpiar clases previas
+            input.classList.remove('correct', 'incorrect');
+            feedback.style.display = "block";
+
+            // Comprobar si la respuesta del usuario incluye alguna de las palabras clave válidas
+            let esCorrecta = false;
+            if (respuestaUsuario.length > 0) {
+                for (let word of keywords) {
+                    if (respuestaUsuario.includes(word)) {
+                        esCorrecta = true;
+                        break;
+                    }
+                }
+            }
+
+            if (esCorrecta) {
+                aciertos++;
+                input.classList.add('correct');
+                feedback.style.color = "#166534";
+                feedback.innerText = "¡Correcto!";
+            } else {
+                input.classList.add('incorrect');
+                feedback.style.color = "#991b1b";
+                feedback.innerText = `Incorrecto o incompleto. (Palabras clave esperadas: ${keywordsAttr})`;
+            }
+        }
+
+        // Calcular calificación (sobre 100 puntos o nota del 1 al 10)
+        let notaPuntos = (aciertos / total) * 100;
+        const resultBox = document.getElementById('quizResultText');
+        resultBox.style.display = "block";
+
+        let mensajeMotivacional = "";
+        if (notaPuntos >= 90) {
+            mensajeMotivacional = "🌟 ¡Excelente trabajo! Tienes un dominio sobresaliente de los conceptos.";
+        } else if (notaPuntos >= 70) {
+            mensajeMotivacional = "👍 ¡Buen trabajo! Comprendes muy bien los puntos clave de la guía.";
+        } else {
+            mensajeMotivacional = "💡 Puedes revisar nuevamente la teoría superior para reforzar tus conocimientos.";
+        }
+
+        resultBox.innerHTML = `Tu Calificación: ${aciertos} de ${total} aciertos (${notaPuntos}%).<br><span style="font-weight: 500; font-size: 13px; color: #0369a1; display:inline-block; margin-top:5px;">${mensajeMotivacional}</span>`;
+    }
+</script>
+
+</body>
+</html>

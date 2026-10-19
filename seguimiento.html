@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Seguimiento y Orientación Conductual</title>
+    
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --accent-purple: #7c3aed;
+            --border-color: #cbd5e1;   
+            --base-font-size: 16px;
+        }
+
+        /* Tamaños de letra dinámicos compartidos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Global Sincronizado */
+        html[data-theme="dark"] {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .content-body {
+            padding: 32px;
+            max-width: 750px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Alerta personalizada interna (en lugar de alert de Chrome) */
+        .system-alert {
+            display: none;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+            animation: fadeIn 0.3s ease;
+        }
+
+        html[data-theme="dark"] .system-alert {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Selector Exclusivo con Flecha */
+        .seguimiento-selector-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .seguimiento-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-deep);
+            border: 2px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .seguimiento-select:focus {
+            border-color: var(--accent-purple);
+        }
+
+        /* Panel de Análisis Psicológico y Ejercicio */
+        .seguimiento-panel {
+            display: none;
+            margin-top: 24px;
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .panel-header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ede9fe;
+            color: var(--accent-purple);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        html[data-theme="dark"] .panel-header-badge {
+            background: #3b0764;
+            color: #d8b4fe;
+        }
+
+        .seguimiento-panel h4 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
+        .analisis-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .analisis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 12px;
+        }
+
+        .analisis-card h5 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analisis-card p {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .registro-historial-item {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent-purple);
+            padding: 12px 14px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .registro-historial-item p {
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="back-btn" title="Volver al Panel">←</a>
+            <span class="header-title">Seguimiento y Orientación Conductual</span>
+        </div>
+    </header>
+
+    <div class="content-body">
+        
+        <div id="systemAlert" class="system-alert"></div>
+
+        <div class="card">
+            <h3>🎯 Panel de Seguimiento Psicológico Personalizado</h3>
+            <p>Selecciona un estudiante para consultar su historial de conducta y obtener sugerencias de intervención y ejercicios prácticos basados en metodología ABA.</p>
+
+            <!-- Selector Exclusivo con Flecha -->
+            <div class="seguimiento-selector-wrapper">
+                <label style="font-size: 0.9rem; font-weight: 800; color: var(--text-main);">🔍 Elegir Estudiante:</label>
+                <select id="selectSeguimientoEstudiante" class="seguimiento-select" onchange="mostrarSeguimientoEstudiante(this.value)">
+                    <option value="">-- Seleccionar estudiante de la lista --</option>
+                </select>
+            </div>
+
+            <!-- Panel que se despliega al elegir al alumno -->
+            <div id="seguimientoPanel" class="seguimiento-panel">
+                <div class="panel-header-badge">🧠 Orientación y Estrategia ABA</div>
+                <h4 id="panelTituloEstudiante">📌 Informe de Seguimiento</h4>
+                
+                <div class="analisis-grid">
+                    <div class="analisis-card">
+                        <h5>💡 Sugerencia Psicológica / Intervención</h5>
+                        <p id="sugerenciaPsicologica">Analizando patrones...</p>
+                    </div>
+                    <div class="analisis-card" style="border-color: #818cf8;">
+                        <h5 style="color: var(--accent-blue);">🏋️ Ejercicio Práctico para el Docente / Aula</h5>
+                        <p id="ejercicioPractico">Preparando ejercicio recomendado...</p>
+                    </div>
+                </div>
+
+                <h5 style="font-size: 0.9rem; font-weight: 800; margin: 16px 0 10px 0; color: var(--text-main);">📋 Historial de Conductas Registradas:</h5>
+                <div id="panelContenidoRegistros"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Cargar preferencias globales de tema y fuente
+    (function() {
+        const savedTheme = localStorage.getItem('aba_theme');
+        if(savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        const savedFont = localStorage.getItem('aba_font_size');
+        if(savedFont) {
+            document.documentElement.setAttribute('data-font-size', savedFont);
+        }
+    })();
+
+    window.onload = function() {
+        cargarSelectEstudiantes();
+    };
+
+    function mostrarAviso(mensaje) {
+        const alerta = document.getElementById('systemAlert');
+        alerta.innerText = mensaje;
+        alerta.style.display = 'block';
+        setTimeout(() => {
+            alerta.style.display = 'none';
+        }, 4500);
+    }
+
+    function obtenerEstudiantes() {
+        let lista = JSON.parse(localStorage.getItem('aba_estudiantes'));
+        if (!lista) {
+            lista = JSON.parse(localStorage.getItem('lista_estudiantes')) || [];
+        }
+        return lista;
+    }
+
+    function cargarSelectEstudiantes() {
+        const selectEstudiantes = document.getElementById('selectSeguimientoEstudiante');
+        const lista = obtenerEstudiantes();
+
+        selectEstudiantes.innerHTML = '<option value="">-- Seleccionar estudiante de la lista --</option>';
+        lista.forEach(nombre => {
+            selectEstudiantes.innerHTML += `<option value="${nombre}">👤 ${nombre}</option>`;
+        });
+    }
+
+    // Análisis Psicológico, Generación de Sugerencias y Ejercicios Prácticos
+    function mostrarSeguimientoEstudiante(nombreEstudiante) {
+        const panel = document.getElementById('seguimientoPanel');
+        const titulo = document.getElementById('panelTituloEstudiante');
+        const contenedorRegistros = document.getElementById('panelContenidoRegistros');
+        const sugerenciaPsicologica = document.getElementById('sugerenciaPsicologica');
+        const ejercicioPractico = document.getElementById('ejercicioPractico');
+
+        if (!nombreEstudiante) {
+            panel.style.display = 'none';
+            return;
+        }
+
+        const registros = JSON.parse(localStorage.getItem('registros_conducta')) || [];
+        const registrosEstudiante = registros.filter(r => r.estudiante === nombreEstudiante);
+
+        titulo.innerText = `📌 Seguimiento Clínico: ${nombreEstudiante}`;
+        panel.style.display = 'block';
+
+        if (registrosEstudiante.length === 0) {
+            sugerenciaPsicologica.innerText = "No se encontraron registros previos para este alumno. Mantenga un registro constante de los antecedentes y consecuencias de sus conductas para establecer una línea base adecuada.";
+            ejercicioPractico.innerText = "🌟 Ejercicio inicial recomendado: Aplicar el juego de 'Atención Conjunta' durante 5 minutos al iniciar la clase para fomentar el contacto visual y la conexión positiva.";
+            contenedorRegistros.innerHTML = '<div class="empty-state" style="padding:10px;">Aún no hay reportes de conducta guardados para este estudiante.</div>';
+            mostrarAviso(`Panel abierto para ${nombreEstudiante}`);
+            return;
+        }
+
+        // Analizar el contenido del último o los registros para dar un ejercicio acorde
+        let textoConductas = registrosEstudiante.map(r => (r.conducta || r.descripcion || "").toLowerCase()).join(" ");
+        
+        let sugerenciaTexto = "";
+        let ejercicioTexto = "";
+
+        if (textoConductas.includes("atención") || textoConductas.includes("concentra") || textoConductas.includes("distrae")) {
+            sugerenciaTexto = "Se observa dificultad sostenida en la atención. Bajo el enfoque ABA, es ideal fraccionar las tareas en bloques cortos (micro-tareas) y ofrecer refuerzo positivo inmediato tras completar cada pequeño paso.";
+            ejercicioTexto = "🎯 <strong>Técnica de Economía de Fichas / Tarjetas de Logro:</strong> Otorgue un pequeño pictograma o ficha cada vez que el estudiante mantenga la atención durante 10 minutos seguidos. Al acumular 3 fichas, permítale elegir una actividad de su agrado por 5 minutos.";
+        } else if (textoConductas.includes("frustr") || textoConductas.includes("enojo") || textoConductas.includes("berrinche") || textoConductas.includes("grita")) {
+            sugerenciaTexto = "El estudiante muestra baja tolerancia a la frustración ante exigencias o cambios. Se recomienda anticipar las transiciones y validar su emoción antes de reorientar la conducta.";
+            ejercicioTexto = "🧘 <strong>El Termómetro de Emociones y la 'Pausa Activa':</strong> Use un cartel visual con colores (Verde: Calmado, Amarillo: Frustrado, Rojo: Desbordado). Enséñale a señalar en qué nivel está para aplicar un ejercicio de respiración profunda de 3 segundos antes de que la conducta escale.";
+        } else {
+            sugerenciaTexto = "El alumno presenta registros variados. Conviene mantener reforzamientos diferenciales y asegurar instrucciones claras y de un solo paso acompañadas de apoyos visuales.";
+            ejercicioTexto = "🧩 <strong>Ejercicio de Roles y Emparejamiento:</strong> Realice una dinámica guiada de modelado donde otro compañero ejemplifique la conducta esperada y reciba un elogio verbal explícito y positivo inmediato (Reforzamiento Vicario).";
+        }
+
+        sugerenciaPsicologica.innerHTML = sugerenciaTexto;
+        ejercicioPractico.innerHTML = ejercicioTexto;
+
+        let htmlContenido = `<p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Total de eventos analizados: <strong>${registrosEstudiante.length}</strong></p>`;
+        
+        registrosEstudiante.forEach((reg) => {
+            htmlContenido += `
+                <div class="registro-historial-item">
+                    <p><strong>📅 Fecha/Hora:</strong> ${reg.fecha || 'No especificada'}</p>
+                    <p><strong>🔍 Conducta Observada:</strong> ${reg.conducta || reg.descripcion || 'Sin descripción'}</p>
+                    ${reg.pautas ? `<p><strong>🎯 Pautas ABA Aplicadas:</strong> ${reg.pautas}</p>` : ''}
+                </div>
+            `;
+        });
+
+        contenedorRegistros.innerHTML = htmlContenido;
+        mostrarAviso(`Datos y ejercicio cargados para ${nombreEstudiante}`);
+    }
+</script>
+
+</body>
+</html>

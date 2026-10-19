@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Registrar Conducta (ABC)</title>
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --border-color: #cbd5e1;   
+            --base-font-size: 16px;
+        }
+
+        /* Tamaños de letra dinámicos compartidos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Global Sincronizado */
+        html[data-theme="dark"] {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title-group h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .header-title-group p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .content-body {
+            padding: 40px 36px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 36px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 26px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-deep);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--accent-blue);
+            background: var(--bg-card);
+        }
+
+        /* Sistema de Botones de Selección Rápida (Chips) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .option-chip {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .option-chip:hover {
+            border-color: #94a3b8;
+            transform: translateY(-1px);
+        }
+
+        .option-chip.selected {
+            background: #eff6ff;
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+        }
+
+        html[data-theme="dark"] .option-chip.selected {
+            background: #1e3a8a;
+            color: #93c5fd;
+            border-color: #3b82f6;
+        }
+
+        .btn-submit {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+        }
+
+        /* Notificaciones Toast */
+        #toastContainer {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out forwards;
+            max-width: 350px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .content-body {
+                padding: 20px 16px;
+            }
+            header {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="back-btn" title="Volver al Panel">←</a>
+            <div class="header-title-group">
+                <h1>Nuevo Registro de Conducta</h1>
+                <p>Complete las preguntas del modelo ABC</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-body">
+        <div class="card">
+            <form id="formConducta" onsubmit="guardarRegistro(event)">
+                
+                <!-- PREGUNTA 1: Estudiante -->
+                <div class="form-group">
+                    <label for="selectEstudiante">1. ¿Qué estudiante presenta la conducta?</label>
+                    <select id="selectEstudiante" class="form-select" required>
+                        <option value="" disabled selected>Seleccione un estudiante...</option>
+                    </select>
+                </div>
+
+                <!-- PREGUNTA 2: Antecedente (Adaptado a detonantes comunes) -->
+                <div class="form-group">
+                    <label>2. ¿Qué ocurrió antes? (Antecedente / Disparador)</label>
+                    <div class="options-grid" id="grupoAntecedentes">
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'antecedente')">Se le indicó terminar una actividad</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'antecedente')">Cambio brusco en la rutina o transición</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'antecedente')">Negativa o límite puesto por el adulto</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'antecedente')">Dificultad o frustración con tarea escolar</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'antecedente')">Interrupción de su juego o actividad favorita</div>
+                    </div>
+                    <input type="hidden" id="valAntecedente" required>
+                </div>
+
+                <!-- PREGUNTA 3: Conducta (Adaptado a manifestaciones típicas) -->
+                <div class="form-group">
+                    <label>3. ¿Qué conducta observaste? (Comportamiento observable)</label>
+                    <div class="options-grid" id="grupoConductas">
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'conducta')">Llantos o berrinche por frustración</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'conducta')">Resistencia pasiva o negativa a cooperar</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'conducta')">Uso de conducta evasiva o escape</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'conducta')">Frustración por no poder comunicarse</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'conducta')">Rigidez ante cambios o insistencia en rutina</div>
+                    </div>
+                    <input type="hidden" id="valConducta" required>
+                </div>
+
+                <!-- PREGUNTA 4: Consecuencia (Adaptado a reacciones post-conducta) -->
+                <div class="form-group">
+                    <label>4. ¿Qué ocurrió después? (Consecuencia observada)</label>
+                    <div class="options-grid" id="grupoConsecuencias">
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'consecuencia')">Se le retiró temporalmente la exigencia</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'consecuencia')">Se le brindó atención y contención emocional</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'consecuencia')">Se redirigió su atención a otro estímulo</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'consecuencia')">Se le ayudó a regularse mediante pausas</div>
+                        <div class="option-chip" onclick="seleccionarOpcion(this, 'consecuencia')">Se mantuvo la instrucción con apoyo físico</div>
+                    </div>
+                    <input type="hidden" id="valConsecuencia" required>
+                </div>
+
+                <button type="submit" class="btn-submit">💾 Guardar Registro de Conducta</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('aba_theme');
+        if(savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        const savedFont = localStorage.getItem('aba_font_size');
+        if(savedFont) {
+            document.documentElement.setAttribute('data-font-size', savedFont);
+        }
+
+        cargarEstudiantesEnSelect();
+    });
+
+    function cargarEstudiantesEnSelect() {
+        const select = document.getElementById('selectEstudiante');
+        let estudiantes = JSON.parse(localStorage.getItem('aba_estudiantes')) || [];
+
+        select.innerHTML = '<option value="" disabled selected>Seleccione un estudiante...</option>';
+
+        if (estudiantes.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = "";
+            opt.disabled = true;
+            opt.textContent = "No hay estudiantes registrados (Agrégalos en 'Mis Estudiantes')";
+            select.appendChild(opt);
+        } else {
+            estudiantes.forEach(est => {
+                const nombreEstudiante = typeof est === 'object' ? est.nombre : est;
+                const opt = document.createElement('option');
+                opt.value = nombreEstudiante;
+                opt.textContent = nombreEstudiante;
+                select.appendChild(opt);
+            });
+        }
+    }
+
+    function mostrarNotificacion(mensaje) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `✨ <span>${mensaje}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function seleccionarOpcion(elemento, tipo) {
+        const padre = elemento.parentElement;
+        padre.querySelectorAll('.option-chip').forEach(chip => {
+            chip.classList.remove('selected');
+        });
+
+        elemento.classList.add('selected');
+
+        const texto = elemento.innerText;
+        if (tipo === 'antecedente') {
+            document.getElementById('valAntecedente').value = texto;
+        } else if (tipo === 'conducta') {
+            document.getElementById('valConducta').value = texto;
+        } else if (tipo === 'consecuencia') {
+            document.getElementById('valConsecuencia').value = texto;
+        }
+    }
+
+    function guardarRegistro(event) {
+        event.preventDefault();
+
+        const estudiante = document.getElementById('selectEstudiante').value;
+        const antecedente = document.getElementById('valAntecedente').value;
+        const conducta = document.getElementById('valConducta').value;
+        const consecuencia = document.getElementById('valConsecuencia').value;
+
+        if (!estudiante) {
+            mostrarNotificacion("⚠️ Por favor selecciona un estudiante válido.");
+            return;
+        }
+
+        if (!antecedente || !conducta || !consecuencia) {
+            mostrarNotificacion("⚠️ Por favor completa todas las preguntas seleccionando una opción en cada bloque.");
+            return;
+        }
+
+        const nuevoRegistro = {
+            estudiante,
+            antecedente,
+            conducta,
+            consecuencia,
+            hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            fecha: new Date().toLocaleDateString()
+        };
+
+        const registros = JSON.parse(localStorage.getItem('registros_conducta')) || [];
+        registros.push(nuevoRegistro);
+        localStorage.setItem('registros_conducta', JSON.stringify(registros));
+
+        mostrarNotificacion("✅ ¡Registro ABC guardado con éxito!");
+
+        document.getElementById('formConducta').reset();
+        document.querySelectorAll('.option-chip').forEach(chip => chip.classList.remove('selected'));
+        document.getElementById('valAntecedente').value = '';
+        document.getElementById('valConducta').value = '';
+        document.getElementById('valConsecuencia').value = '';
+        cargarEstudiantesEnSelect();
+
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1200);
+    }
+</script>
+
+</body>
+</html>

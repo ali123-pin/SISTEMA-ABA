@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABA - Mis Estudiantes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-deep: #f1f5f9;        
+            --bg-card: #ffffff;        
+            --text-main: #1e293b;      
+            --text-muted: #64748b;     
+            --accent-blue: #2563eb;    
+            --border-color: #cbd5e1;   
+            --upload-bg: #f8fafc;
+            --base-font-size: 16px;
+        }
+
+        /* Tamaños de letra dinámicos compartidos */
+        html[data-font-size="nivel-1"] { --base-font-size: 14px; }
+        html[data-font-size="nivel-2"] { --base-font-size: 16px; }
+        html[data-font-size="nivel-3"] { --base-font-size: 19px; }
+
+        /* Modo Oscuro Global Sincronizado */
+        html[data-theme="dark"] {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --upload-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #bae6fd;
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .content-body {
+            padding: 32px;
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            background: var(--upload-bg);
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        .upload-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .upload-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .system-alert {
+            display: none;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        html[data-theme="dark"] .system-alert {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        /* Cuadro de confirmación interno del sistema */
+        .confirm-box {
+            display: none;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        html[data-theme="dark"] .confirm-box {
+            background: #450a0a;
+            border-color: #991b1b;
+        }
+
+        .confirm-box p {
+            color: #991b1b;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        html[data-theme="dark"] .confirm-box p {
+            color: #fca5a5;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-confirm-yes {
+            flex: 1;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-confirm-no {
+            flex: 1;
+            background: var(--bg-deep);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .student-list-container {
+            margin-top: 20px;
+        }
+
+        .student-item {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .btn-delete-all {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+
+        html[data-theme="dark"] .btn-delete-all {
+            background: #450a0a;
+            color: #fca5a5;
+            border-color: #991b1b;
+        }
+
+        .btn-delete-all:hover {
+            background: #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="back-btn" title="Volver al Panel">←</a>
+            <span class="header-title">Mis Estudiantes</span>
+        </div>
+    </header>
+
+    <div class="content-body">
+        
+        <div id="systemAlert" class="system-alert"></div>
+
+        <div class="card">
+            <h3>📂 Cargar Listado de Estudiantes</h3>
+            <p>Sube un archivo en formato <strong>Word (.docx)</strong> o <strong>PDF (.pdf)</strong>. El sistema extraerá los nombres automáticamente.</p>
+
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-label">📎 Haz clic aquí para seleccionar tu archivo</div>
+                <div class="upload-hint">Formatos aceptados: .docx, .pdf</div>
+                <input type="file" id="fileInput" class="upload-input" accept=".docx, .pdf" onchange="procesarArchivo(event)">
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>👧 Listado Actual en el Sistema</h3>
+            <p>Estos estudiantes están sincronizados en tiempo real con el formulario de <strong>Registrar Conducta</strong>.</p>
+
+            <div id="studentContainer" class="student-list-container"></div>
+
+            <button type="button" id="btnBorrarTodo" class="btn-delete-all" style="display: none;" onclick="mostrarConfirmacionBorrado()">
+                🗑️ Borrar toda la lista y registros de seguimiento
+            </button>
+
+            <!-- Cuadro de confirmación visual interno -->
+            <div id="confirmBox" class="confirm-box">
+                <p>¿Deseas eliminar toda la lista de estudiantes y sus registros de seguimiento?</p>
+                <div class="confirm-actions">
+                    <button class="btn-confirm-yes" onclick="ejecutarBorradoTotal()">Sí, borrar todo</button>
+                    <button class="btn-confirm-no" onclick="ocultarConfirmacionBorrado()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Cargar preferencias globales apenas inicia el script
+    (function() {
+        const savedTheme = localStorage.getItem('aba_theme');
+        if(savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        const savedFont = localStorage.getItem('aba_font_size');
+        if(savedFont) {
+            document.documentElement.setAttribute('data-font-size', savedFont);
+        }
+    })();
+
+    window.onload = function() {
+        renderizarEstudiantes();
+    };
+
+    function mostrarAviso(mensaje) {
+        const alerta = document.getElementById('systemAlert');
+        alerta.innerText = mensaje;
+        alerta.style.display = 'block';
+        setTimeout(() => {
+            alerta.style.display = 'none';
+        }, 4000);
+    }
+
+    function obtenerEstudiantes() {
+        let lista = JSON.parse(localStorage.getItem('aba_estudiantes'));
+        if (!lista) {
+            lista = JSON.parse(localStorage.getItem('lista_estudiantes')) || [];
+        }
+        return lista;
+    }
+
+    function guardarEstudiantes(lista) {
+        localStorage.setItem('aba_estudiantes', JSON.stringify(lista));
+        localStorage.setItem('lista_estudiantes', JSON.stringify(lista));
+    }
+
+    function renderizarEstudiantes() {
+        const contenedor = document.getElementById('studentContainer');
+        const btnBorrar = document.getElementById('btnBorrarTodo');
+        const lista = obtenerEstudiantes();
+
+        if (lista.length === 0) {
+            contenedor.innerHTML = '<div class="empty-state">No hay estudiantes cargados actualmente. Sube un archivo .docx o .pdf para comenzar.</div>';
+            btnBorrar.style.display = 'none';
+            document.getElementById('confirmBox').style.display = 'none';
+            return;
+        }
+
+        btnBorrar.style.display = 'block';
+        contenedor.innerHTML = '';
+        
+        lista.forEach((nombre, index) => {
+            contenedor.innerHTML += `
+                <div class="student-item">
+                    <span>👤 ${nombre}</span>
+                    <button onclick="eliminarEstudianteIndividual(${index})" style="background:none; border:none; color:#dc2626; cursor:pointer; font-weight:bold; padding: 4px 8px;">✕ Eliminar</button>
+                </div>
+            `;
+        });
+    }
+
+    function procesarArchivo(event) {
+        const archivo = event.target.files[0];
+        if (!archivo) return;
+
+        const extension = archivo.name.split('.').pop().toLowerCase();
+
+        if (extension === 'pdf') {
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                const typedarray = new Uint8Array(e.target.result);
+                pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                    let textoCompleto = "";
+                    let paginasPendientes = pdf.numPages;
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        pdf.getPage(i).then(function(page) {
+                            page.getTextContent().then(function(textContent) {
+                                textContent.items.forEach(function(item) {
+                                    textoCompleto += item.str + "\n";
+                                });
+                                paginasPendientes--;
+                                if (paginasPendientes === 0) {
+                                    extraerNombresYGuardar(textoCompleto);
+                                }
+                            });
+                        });
+                    }
+                });
+            };
+            lector.readAsArrayBuffer(archivo);
+
+        } else if (extension === 'docx') {
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                mammoth.extractRawText({arrayBuffer: e.target.result})
+                    .then(function(resultado) {
+                        extraerNombresYGuardar(resultado.value);
+                    })
+                    .catch(function(err) {
+                        mostrarAviso("Error al leer el archivo Word.");
+                    });
+            };
+            lector.readAsArrayBuffer(archivo);
+        } else {
+            mostrarAviso("Por favor selecciona un archivo .docx o .pdf válido.");
+        }
+    }
+
+    function extraerNombresYGuardar(texto) {
+        const lineas = texto.split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 2);
+
+        let actuales = obtenerEstudiantes();
+        
+        lineas.forEach(nombre => {
+            if (!actuales.includes(nombre)) {
+                actuales.push(nombre);
+            }
+        });
+
+        guardarEstudiantes(actuales);
+        renderizarEstudiantes();
+        mostrarAviso("¡Lista de estudiantes importada y sincronizada con éxito!");
+        document.getElementById('fileInput').value = "";
+    }
+
+    function eliminarEstudianteIndividual(index) {
+        let lista = obtenerEstudiantes();
+        lista.splice(index, 1);
+        guardarEstudiantes(lista);
+        renderizarEstudiantes();
+        mostrarAviso("Estudiante eliminado de la lista.");
+    }
+
+    function mostrarConfirmacionBorrado() {
+        document.getElementById('confirmBox').style.display = 'block';
+    }
+
+    function ocultarConfirmacionBorrado() {
+        document.getElementById('confirmBox').style.display = 'none';
+    }
+
+    function ejecutarBorradoTotal() {
+        localStorage.removeItem('aba_estudiantes');
+        localStorage.removeItem('lista_estudiantes');
+        localStorage.removeItem('registros_conducta');
+        ocultarConfirmacionBorrado();
+        renderizarEstudiantes();
+        mostrarAviso("Se ha borrado toda la lista de estudiantes y los registros de seguimiento.");
+    }
+</script>
+
+</body>
+</html>
